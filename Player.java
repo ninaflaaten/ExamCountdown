@@ -1,6 +1,5 @@
 public class Player extends Entity {
 
-
     private int score;
 
     public Player(int health, int strength) {

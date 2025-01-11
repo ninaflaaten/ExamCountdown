@@ -1,51 +1,37 @@
-/*
- * Represents an entity in the game. An entity has:
- *  health   (number of lives)
- *  strenght (strength level)
- * One can read the health and strength of an entity with the following getter methods:
- *  getHealth() and getStrength()
- * 
- */
-public class Entity {
+public abstract class Entity {
+    protected int health; // Helse for enheten
+    protected int attackPower; // Angrepskraft
 
-    int health;
-    int strength;
-
-    public Entity(int health, int strength) {
+    public Entity(int health, int attackPower) {
         this.health = health;
-        this.strength = strength;
-
+        this.attackPower = attackPower;
     }
 
-    /* Get entities health */
+    // Hent helse
     public int getHealth() {
         return health;
     }
 
-    /* Get entities strenght */
-    public int getStrength() {
-        return strength;
-    }
-
-    /* Remove wanted number of lives from enity */
-    public void takeLife(int life) {
-        health = health - life;
-        if (health < 0) health = 0;
-    }
-
-    /* Add wanted number of lives to entity */
-    public void addLife(int life) {
-        health = health + life;
-    }
-
-    /* Check if entity is alive */
+    // Sjekk om enheten er i live
     public boolean isAlive() {
-        if (health < 1 ) {
-            return false;
-        }
-        else {
-            return true;
+        return health > 0;
+    }
+
+    // Ta skade
+    public void takeDamage(int damage) {
+        health -= damage;
+        if (health < 0) {
+            health = 0; // Helse skal ikke være negativ
         }
     }
-    
+
+    // Angrep: returnerer hvor mye skade denne enheten gjør
+    public int attack() {
+        return attackPower;
+    }
+
+    // Hent angrepskraft
+    public int getAttackPower() {
+        return attackPower;
+    }
 }
