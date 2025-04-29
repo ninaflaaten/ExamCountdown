@@ -3,54 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>Nedtelling til Eksamen</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #fff0f5;
-      color: #333;
-      text-align: center;
-      padding: 40px 20px;
-    }
-
-    h1 {
-      font-size: 2.5em;
-      color: hotpink;
-      margin-bottom: 30px;
-    }
-
-    .exam {
-      background-color: #ffe4f2;
-      border: 2px solid hotpink;
-      border-radius: 15px;
-      padding: 20px;
-      margin: 15px auto;
-      max-width: 500px;
-      box-shadow: 0 4px 8px rgba(255, 105, 180, 0.2);
-    }
-
-    .subject {
-      font-size: 1.4em;
-      font-weight: bold;
-      color: hotpink;
-    }
-
-    .countdown {
-      font-size: 1.2em;
-      margin-top: 10px;
-    }
-
-    .done {
-      text-decoration: line-through;
-      color: gray;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <h1>📚 Nedtelling til Eksamen</h1>
-
-  <div id="exams">
-  </div>
+  <div id="exams"></div>
 
   <script>
     const exams = [
@@ -60,41 +17,100 @@
       { subject: "🎲 MNF130", date: "2025-05-27T09:00:00" }
     ];
 
-    function updateCountdowns() {
+    const emojis = ["😰", "😅", "😎", "🤓", "😴", "💪", "🔥"];
+    let emojiStatus = JSON.parse(localStorage.getItem("emojiStatus") || "{}");
+
+    function saveStatus() {
+      localStorage.setItem("emojiStatus", JSON.stringify(emojiStatus));
+    }
+
+    function renderExams() {
       const container = document.getElementById("exams");
       container.innerHTML = "";
 
-      const now = new Date();
-
-      exams.forEach(exam => {
+      exams.forEach((exam, index) => {
         const examDate = new Date(exam.date);
+        const now = new Date();
         const diff = examDate - now;
 
-        let content = "";
+        const wrapper = document.createElement("div");
+        wrapper.className = "exam";
+
+        const subject = document.createElement("div");
+        subject.className = "subject";
+        subject.textContent = exam.subject;
+
+        const countdown = document.createElement("div");
+        countdown.className = "countdown";
+        countdown.id = `countdown-${index}`;
 
         if (diff <= 0) {
-          content = `<div class="exam done">
-                      <div class="subject">${exam.subject}</div>
-                      <div class="countdown">Ferdig! 🎉</div>
-                    </div>`;
+          countdown.textContent = "Ferdig! 🎉";
         } else {
-          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-          const minutes = Math.floor((diff / (1000 * 60)) % 60);
-          const seconds = Math.floor((diff / 1000) % 60);
-
-          content = `<div class="exam">
-                      <div class="subject">${exam.subject}</div>
-                      <div class="countdown">${days} dager ${hours}t ${minutes}m ${seconds}s igjen</div>
-                    </div>`;
+          countdown.textContent = formatTime(diff);
         }
 
-        container.innerHTML += content;
+        // Emoji visning
+        const emoji = document.createElement("div");
+        emoji.className = "emoji";
+        emoji.textContent = emojiStatus[exam.subject] || "➕";
+
+        // Emoji-velger popup
+        const picker = document.createElement("div");
+        picker.className = "emoji-picker";
+        emojis.forEach(em => {
+          const span = document.createElement("span");
+          span.textContent = em;
+          span.onclick = () => {
+            emojiStatus[exam.subject] = em;
+            saveStatus();
+            renderExams(); // oppdater visning
+          };
+          picker.appendChild(span);
+        });
+
+        // Åpne emoji-valg ved langt trykk (touch)
+        let pressTimer;
+        emoji.addEventListener("mousedown", (e) => {
+          e.preventDefault();
+          pressTimer = setTimeout(() => picker.style.display = "block", 500);
+        });
+        emoji.addEventListener("mouseup", () => clearTimeout(pressTimer));
+        emoji.addEventListener("mouseleave", () => clearTimeout(pressTimer));
+
+        emoji.addEventListener("touchstart", (e) => {
+          pressTimer = setTimeout(() => picker.style.display = "block", 500);
+        });
+        emoji.addEventListener("touchend", () => clearTimeout(pressTimer));
+
+        wrapper.appendChild(subject);
+        wrapper.appendChild(countdown);
+        wrapper.appendChild(emoji);
+        wrapper.appendChild(picker);
+        container.appendChild(wrapper);
       });
     }
 
-    setInterval(updateCountdowns, 1000);
-    updateCountdowns();
+    function formatTime(ms) {
+      const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((ms / (1000 * 60)) % 60);
+      const seconds = Math.floor((ms / 1000) % 60);
+      return `${days} dager ${hours}t ${minutes}m ${seconds}s igjen`;
+    }
+
+    function updateTimers() {
+      exams.forEach((exam, i) => {
+        const countdown = document.getElementById(`countdown-${i}`);
+        if (countdown) {
+          const diff = new Date(exam.date) - new Date();
+          countdown.textContent = diff <= 0 ? "Ferdig! 🎉" : formatTime(diff);
+        }
+      });
+    }
+
+    renderExams();
+    setInterval(updateTimers, 1000);
   </script>
 </body>
 </html>

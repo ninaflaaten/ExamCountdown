@@ -1,0 +1,75 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #fff0f5;
+    color: #333;
+    text-align: center;
+    padding: 40px 20px;
+  }
+  
+  h1 {
+    font-size: 2.5em;
+    color: hotpink;
+    margin-bottom: 30px;
+  }
+  
+  .exam {
+    background-color: #ffe4f2;
+    border: 2px solid hotpink;
+    border-radius: 15px;
+    padding: 20px;
+    margin: 15px auto;
+    max-width: 500px;
+    box-shadow: 0 4px 8px rgba(255, 105, 180, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+  
+  .subject {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: hotpink;
+    margin-bottom: 10px;
+  }
+  
+  .countdown {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+  }
+  
+  .emoji {
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+    font-size: 1.8em;
+    cursor: pointer;
+    user-select: none;
+  }
+  
+  .emoji-picker {
+    display: none;
+    position: absolute;
+    bottom: 40px;
+    right: 10px;
+    background-color: #fff;
+    border: 1px solid hotpink;
+    border-radius: 8px;
+    padding: 5px;
+    z-index: 1;
+  }
+  
+  .emoji-picker span {
+    cursor: pointer;
+    padding: 5px;
+    display: inline-block;
+    font-size: 1.4em;
+  }
+  
+  @media (max-width: 600px) {
+    .exam {
+      width: 90%;
+    }
+  }
+  
