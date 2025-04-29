@@ -44,44 +44,48 @@
         countdown.className = "countdown";
         countdown.id = `countdown-${index}`;
 
-        if (diff <= 0) {
-          countdown.textContent = "Ferdig! 🎉";
-        } else {
-          countdown.textContent = formatTime(diff);
-        }
+        countdown.textContent = diff <= 0 ? "Ferdig! 🎉" : formatTime(diff);
 
-        // Emoji visning
         const emoji = document.createElement("div");
         emoji.className = "emoji";
         emoji.textContent = emojiStatus[exam.subject] || "➕";
 
-        // Emoji-velger popup
         const picker = document.createElement("div");
         picker.className = "emoji-picker";
+
         emojis.forEach(em => {
           const span = document.createElement("span");
           span.textContent = em;
           span.onclick = () => {
             emojiStatus[exam.subject] = em;
             saveStatus();
-            renderExams(); // oppdater visning
+            renderExams();
           };
           picker.appendChild(span);
         });
 
-        // Åpne emoji-valg ved langt trykk (touch)
+        // Trykk og hold på boksen for emojivalg (touch)
         let pressTimer;
-        emoji.addEventListener("mousedown", (e) => {
-          e.preventDefault();
-          pressTimer = setTimeout(() => picker.style.display = "block", 500);
-        });
-        emoji.addEventListener("mouseup", () => clearTimeout(pressTimer));
-        emoji.addEventListener("mouseleave", () => clearTimeout(pressTimer));
+        const startHold = () => {
+          pressTimer = setTimeout(() => {
+            wrapper.classList.add("zoomed");
+            picker.style.display = "block";
+          }, 500);
+        };
 
-        emoji.addEventListener("touchstart", (e) => {
-          pressTimer = setTimeout(() => picker.style.display = "block", 500);
-        });
-        emoji.addEventListener("touchend", () => clearTimeout(pressTimer));
+        const cancelHold = () => {
+          clearTimeout(pressTimer);
+          wrapper.classList.remove("zoomed");
+          picker.style.display = "none";
+        };
+
+        wrapper.addEventListener("mousedown", startHold);
+        wrapper.addEventListener("mouseup", cancelHold);
+        wrapper.addEventListener("mouseleave", cancelHold);
+
+        wrapper.addEventListener("touchstart", startHold);
+        wrapper.addEventListener("touchend", cancelHold);
+        wrapper.addEventListener("touchcancel", cancelHold);
 
         wrapper.appendChild(subject);
         wrapper.appendChild(countdown);
