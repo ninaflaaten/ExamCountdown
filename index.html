@@ -6,35 +6,187 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>📚 Nedtelling til Eksamen</h1>
+  <h1>👩‍🎓 Nedtelling til Eksamen</h1>
+  <div class="motivation" id="motivation"></div>
   <div id="exams"></div>
+
+  <button id="pick-random">Hva skal jeg jobbe med i dag? 🎲</button>
+  <div id="random-subject"></div>
+
+  <div id="study-log">
+    <h2>📔 Læringslogg</h2>
+    <div id="log-message"></div>
+
+    <div class="log-inputs">
+      <input type="text" id="log-input" placeholder="Hva har du lært i dag?" />
+      <select id="log-subject">
+        <option value="">Velg fag</option>
+      </select>
+      <button id="log-button">Legg til</button>
+    </div>
+
+    <hr>
+    <div id="log-list"></div>
+  </div>
 
   <script>
     const exams = [
       { subject: "🗳️ INF115", date: "2025-05-13T09:00:00" },
       { subject: "👾 INF101", date: "2025-05-19T09:00:00" },
-      { subject: "👩🏼‍💻 INF222", date: "2025-05-22T09:00:00" },
+      { subject: "👩‍💻 INF222", date: "2025-05-22T09:00:00" },
       { subject: "🎲 MNF130", date: "2025-05-27T09:00:00" }
     ];
 
-    const emojis = ["😰", "😅", "😎", "🤓", "😴", "💪", "🔥"];
+    const emojis = ["🤠", "😅", "😎", "🤓", "🤡", "🥶", "🙃", "👀", "😌"];
     let emojiStatus = JSON.parse(localStorage.getItem("emojiStatus") || "{}");
 
-    function saveStatus() {
-      localStorage.setItem("emojiStatus", JSON.stringify(emojiStatus));
+    const motivationQuotes = [
+      "Du får A i MNF!",
+      "Du får A i INF101!",
+      "Du får A i 222!",
+      "Du får A i 115!",
+      "Ett steg om gangen🚶‍➡️",
+      "Snart i mål! 🏎️",
+      "💃🪩🎀🦥👯‍♀️🤠",
+      "You can do it!",
+      "Snaaart sommer nå!👙🌻🥵",
+      "Tenk på Trondheim!"
+    ];
+
+    const sanitize = str => str.replace(/[<>&"]/g, c => ({
+      '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;'
+    })[c]);
+
+    function showDailyMotivation() {
+      const index = new Date().getDate() % motivationQuotes.length;
+      document.getElementById("motivation").textContent = motivationQuotes[index];
     }
+
+    function getTodayKey() {
+      return new Date().toISOString().split("T")[0];
+    }
+
+    function getLogData() {
+      return JSON.parse(localStorage.getItem("studyLog") || "{}");
+    }
+
+    function saveLogData(data) {
+      localStorage.setItem("studyLog", JSON.stringify(data));
+    }
+
+    function renderStudyLog() {
+      const container = document.getElementById("log-list");
+      const message = document.getElementById("log-message");
+      const data = getLogData();
+      const todayKey = getTodayKey();
+
+      container.innerHTML = "";
+      const entries = Object.entries(data).sort().reverse();
+      if (entries.length === 0) {
+        message.textContent = "Ny dag! Hva har du lært i dag, Nina?";
+        return;
+      }
+
+      message.textContent = "Her er det du har jobbet med:";
+
+      entries.forEach(([date, topics]) => {
+        if (!Array.isArray(topics)) return;
+        const dateHeader = document.createElement("h3");
+        dateHeader.textContent = date;
+        container.appendChild(dateHeader);
+
+        const ul = document.createElement("ul");
+        topics.forEach((item, index) => {
+          const li = document.createElement("li");
+          li.className = "entry";
+
+          const span = document.createElement("span");
+          span.className = "entry-text";
+          span.textContent = (typeof item === "string") ? item : `${item.subject}: ${item.text}`;
+
+          span.ondblclick = () => {
+            const input = document.createElement("input");
+            input.type = "text";
+            input.value = (typeof item === "string") ? item : item.text;
+            input.onblur = () => {
+              const clean = sanitize(input.value.trim());
+              if (clean) {
+                if (typeof item === "string") {
+                  topics[index] = clean;
+                } else {
+                  item.text = clean;
+                }
+                saveLogData(data);
+                renderStudyLog();
+              }
+            };
+            li.replaceChild(input, span);
+            input.focus();
+          };
+
+          const del = document.createElement("button");
+          del.textContent = "❌";
+          del.onclick = () => {
+            topics.splice(index, 1);
+            if (topics.length === 0) delete data[date];
+            saveLogData(data);
+            renderStudyLog();
+          };
+
+          const buttons = document.createElement("div");
+          buttons.className = "entry-buttons";
+          buttons.appendChild(del);
+
+          li.appendChild(span);
+          li.appendChild(buttons);
+          ul.appendChild(li);
+        });
+
+        container.appendChild(ul);
+      });
+    }
+
+    document.getElementById("log-button").addEventListener("click", () => {
+      const input = document.getElementById("log-input");
+      const subject = document.getElementById("log-subject").value;
+      const value = sanitize(input.value.trim());
+      if (!value || !subject) return;
+
+      const data = getLogData();
+      const today = getTodayKey();
+      if (!data[today]) data[today] = [];
+      data[today].push({ subject, text: value });
+
+      saveLogData(data);
+      input.value = "";
+      document.getElementById("log-subject").value = "";
+      renderStudyLog();
+    });
+
+   
+
+    document.getElementById("pick-random").addEventListener("click", () => {
+      const now = new Date();
+      const upcomingExams = exams.filter(exam => new Date(exam.date) > now);
+      const random = upcomingExams[Math.floor(Math.random() * upcomingExams.length)];
+      document.getElementById("random-subject").textContent = random
+        ? `Jobb med: ${random.subject}!`
+        : "🌸⛱️🦋GOOOD SOMMER👙🍉🌻";
+    });
 
     function renderExams() {
       const container = document.getElementById("exams");
       container.innerHTML = "";
+      const now = new Date();
+      const nextExam = exams.findIndex(ex => new Date(ex.date) > now);
 
       exams.forEach((exam, index) => {
         const examDate = new Date(exam.date);
-        const now = new Date();
         const diff = examDate - now;
 
         const wrapper = document.createElement("div");
         wrapper.className = "exam";
+        if (index === nextExam) wrapper.classList.add("next");
 
         const subject = document.createElement("div");
         subject.className = "subject";
@@ -43,64 +195,21 @@
         const countdown = document.createElement("div");
         countdown.className = "countdown";
         countdown.id = `countdown-${index}`;
-
         countdown.textContent = diff <= 0 ? "Ferdig! 🎉" : formatTime(diff);
-
-        const emoji = document.createElement("div");
-        emoji.className = "emoji";
-        emoji.textContent = emojiStatus[exam.subject] || "➕";
-
-        const picker = document.createElement("div");
-        picker.className = "emoji-picker";
-
-        emojis.forEach(em => {
-          const span = document.createElement("span");
-          span.textContent = em;
-          span.onclick = () => {
-            emojiStatus[exam.subject] = em;
-            saveStatus();
-            renderExams();
-          };
-          picker.appendChild(span);
-        });
-
-        // Trykk og hold på boksen for emojivalg (touch)
-        let pressTimer;
-        const startHold = () => {
-          pressTimer = setTimeout(() => {
-            wrapper.classList.add("zoomed");
-            picker.style.display = "block";
-          }, 500);
-        };
-
-        const cancelHold = () => {
-          clearTimeout(pressTimer);
-          wrapper.classList.remove("zoomed");
-          picker.style.display = "none";
-        };
-
-        wrapper.addEventListener("mousedown", startHold);
-        wrapper.addEventListener("mouseup", cancelHold);
-        wrapper.addEventListener("mouseleave", cancelHold);
-
-        wrapper.addEventListener("touchstart", startHold);
-        wrapper.addEventListener("touchend", cancelHold);
-        wrapper.addEventListener("touchcancel", cancelHold);
 
         wrapper.appendChild(subject);
         wrapper.appendChild(countdown);
-        wrapper.appendChild(emoji);
-        wrapper.appendChild(picker);
         container.appendChild(wrapper);
       });
-    }
 
-    function formatTime(ms) {
-      const days = Math.floor(ms / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((ms / (1000 * 60)) % 60);
-      const seconds = Math.floor((ms / 1000) % 60);
-      return `${days} dager ${hours}t ${minutes}m ${seconds}s igjen`;
+      const select = document.getElementById("log-subject");
+      select.innerHTML = '<option value="">Velg fag</option>';
+      exams.forEach(e => {
+        const opt = document.createElement("option");
+        opt.value = e.subject;
+        opt.textContent = e.subject;
+        select.appendChild(opt);
+      });
     }
 
     function updateTimers() {
@@ -113,7 +222,17 @@
       });
     }
 
+    function formatTime(ms) {
+      const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((ms / (1000 * 60)) % 60);
+      const seconds = Math.floor((ms / 1000) % 60);
+      return `${days} dager ${hours}t ${minutes}m ${seconds}s igjen`;
+    }
+
+    showDailyMotivation();
     renderExams();
+    renderStudyLog();
     setInterval(updateTimers, 1000);
   </script>
 </body>
