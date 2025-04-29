@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <title>Nedtelling til Eksamen</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff0f5;
+      color: #333;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      color: hotpink;
+      margin-bottom: 30px;
+    }
+
+    .exam {
+      background-color: #ffe4f2;
+      border: 2px solid hotpink;
+      border-radius: 15px;
+      padding: 20px;
+      margin: 15px auto;
+      max-width: 500px;
+      box-shadow: 0 4px 8px rgba(255, 105, 180, 0.2);
+    }
+
+    .subject {
+      font-size: 1.4em;
+      font-weight: bold;
+      color: hotpink;
+    }
+
+    .countdown {
+      font-size: 1.2em;
+      margin-top: 10px;
+    }
+
+    .done {
+      text-decoration: line-through;
+      color: gray;
+    }
+  </style>
+</head>
+<body>
+  <h1>📚 Nedtelling til Eksamen</h1>
+
+  <div id="exams">
+  </div>
+
+  <script>
+    const exams = [
+      { subject: "🗳️ INF115", date: "2025-05-13T09:00:00" },
+      { subject: "👾 INF101", date: "2025-05-19T09:00:00" },
+      { subject: "👩🏼‍💻 INF222", date: "2025-05-22T09:00:00" },
+      { subject: "🎲 MNF130", date: "2025-05-27T09:00:00" }
+    ];
+
+    function updateCountdowns() {
+      const container = document.getElementById("exams");
+      container.innerHTML = "";
+
+      const now = new Date();
+
+      exams.forEach(exam => {
+        const examDate = new Date(exam.date);
+        const diff = examDate - now;
+
+        let content = "";
+
+        if (diff <= 0) {
+          content = `<div class="exam done">
+                      <div class="subject">${exam.subject}</div>
+                      <div class="countdown">Ferdig! 🎉</div>
+                    </div>`;
+        } else {
+          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+          const minutes = Math.floor((diff / (1000 * 60)) % 60);
+          const seconds = Math.floor((diff / 1000) % 60);
+
+          content = `<div class="exam">
+                      <div class="subject">${exam.subject}</div>
+                      <div class="countdown">${days} dager ${hours}t ${minutes}m ${seconds}s igjen</div>
+                    </div>`;
+        }
+
+        container.innerHTML += content;
+      });
+    }
+
+    setInterval(updateCountdowns, 1000);
+    updateCountdowns();
+  </script>
+</body>
+</html>
