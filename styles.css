@@ -1,72 +1,87 @@
-/* styles.css */
-
 body {
     font-family: 'Segoe UI', sans-serif;
-    background: #fff5f9;
+    background: linear-gradient(to bottom right, #fff0f5, #ffeef8);
     color: #333;
     text-align: center;
     padding: 40px 20px;
     margin: 0;
+    min-height: 100vh;
   }
   
   h1 {
-    font-size: 2.5em;
+    font-size: 3em;
     color: hotpink;
     margin-bottom: 30px;
+    text-shadow: 1px 1px 2px #ffa8d8;
   }
   
   h2 {
     color: hotpink;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    font-size: 1.6em;
+    text-align: center;
   }
   
   #motivation {
-    font-size: 1.2em;
+    font-size: 1.3em;
     font-style: italic;
-    color: #aa3399;
-    margin-bottom: 25px;
+    color: #cc3399;
+    margin-bottom: 30px;
   }
   
   #exams .exam {
-    background-color: #ffe4f2;
+    background: #fff0f7;
     border: 2px solid hotpink;
-    border-radius: 15px;
-    padding: 20px;
-    margin: 15px auto;
+    border-radius: 20px;
+    padding: 25px;
+    margin: 20px auto;
     max-width: 500px;
-    box-shadow: 0 4px 8px rgba(255, 105, 180, 0.2);
+    box-shadow: 0 8px 20px rgba(255, 105, 180, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  #exams .exam:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(255, 105, 180, 0.3);
   }
   
   .subject {
-    font-size: 1.4em;
+    font-size: 1.5em;
     font-weight: bold;
     color: hotpink;
   }
   
   .countdown {
     font-size: 1.2em;
-    margin-top: 10px;
+    margin-top: 12px;
+    color: #555;
   }
   
   .next {
     border-color: gold !important;
-    box-shadow: 0 0 12px rgba(255, 215, 0, 0.7);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
   }
   
   #pick-random {
-    margin-bottom: 20px;
-    padding: 10px 20px;
+    margin: 30px auto 20px;
+    padding: 12px 24px;
     font-size: 1.1em;
-    background: hotpink;
+    background: linear-gradient(135deg, hotpink, #ff66cc);
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  #pick-random:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(255, 105, 180, 0.4);
   }
   
   #random-subject {
-    font-size: 1.4em;
-    margin-bottom: 30px;
+    font-size: 1.5em;
+    margin-bottom: 40px;
     color: #cc3399;
   }
   
@@ -74,15 +89,18 @@ body {
     margin: 40px auto;
     max-width: 600px;
     background: #fff0f8;
-    padding: 20px;
-    border-radius: 15px;
+    padding: 25px;
+    border-radius: 20px;
     border: 2px solid hotpink;
+    box-shadow: 0 6px 15px rgba(255, 182, 193, 0.2);
     text-align: left;
   }
   
   #log-message {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     text-align: center;
+    font-size: 1.1em;
+    color: #444;
   }
   
   .log-inputs {
@@ -94,19 +112,25 @@ body {
   }
   
   #log-input, #log-subject {
-    padding: 8px;
-    border-radius: 8px;
+    padding: 10px;
+    border-radius: 10px;
     border: 1px solid #ccc;
     font-size: 1em;
+    width: 200px;
   }
   
   #log-button {
-    padding: 8px 12px;
+    padding: 10px 16px;
     background: hotpink;
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  #log-button:hover {
+    background: #e60073;
   }
   
   hr {
@@ -123,16 +147,23 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 6px;
-    background: #fff;
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: 1px solid #e5c2d1;
+    margin-bottom: 8px;
+    background: white;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #f1c8da;
+    box-shadow: 0 2px 6px rgba(255, 105, 180, 0.08);
+    transition: background 0.2s ease;
+  }
+  
+  .entry:hover {
+    background: #fff4fa;
   }
   
   .entry-text {
     flex-grow: 1;
     cursor: pointer;
+    font-size: 1em;
   }
   
   .entry-buttons {
@@ -146,6 +177,11 @@ body {
     cursor: pointer;
     font-size: 1em;
     color: hotpink;
+    transition: color 0.2s ease;
+  }
+  
+  .entry-buttons button:hover {
+    color: #e60073;
   }
   
   #clear-log {
@@ -154,8 +190,11 @@ body {
     color: darkred;
     cursor: pointer;
     font-size: 0.9em;
-    margin-top: 10px;
+    margin-top: 15px;
     text-align: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
   }
   
   .hidden {
